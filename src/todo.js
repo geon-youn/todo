@@ -9,13 +9,12 @@ class ToggleItem {
 }
 
 class ToDoListItem extends ToggleItem {
-    constructor(title, description, dueDate, category, subtasks) {
+    constructor(title, description, dueDate, category) {
         super();
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.category = category;
-        this.subtasks = subtasks;
     }
 
     updateCategory(oldCat, newCat) {
@@ -25,35 +24,53 @@ class ToDoListItem extends ToggleItem {
     }
 }
 
-class SubTask extends ToggleItem {
-    constructor(task) {
-        super();
-        this.task = task;
-    }
-}
-
 const toDoList = (function () {
-    const _DEFAULT = 'Default';
+    const default_cat = 'Default';
     const _categories = [];
-    const _toDo = [];
+    const _toDo = [
+        {
+            "id": 0,
+            "task": {
+                "completed": false,
+                "title": "Go grocery shopping",
+                "description": "- Bananas\r\n- Milk\r\n- Your mom",
+                "dueDate": "Mon Feb 20, 2023",
+                "category": "Default"
+            }
+        },
+        {
+            "id": 1,
+            "task": {
+                "completed": false,
+                "title": "Hiking trip",
+                "description": "Don't forget water!",
+                "dueDate": "Tue Feb 21, 2023",
+                "category": "Default"
+            }
+        },
+        {
+            "id": 2,
+            "task": {
+                "completed": false,
+                "title": "2DB3 Assignment",
+                "description": "",
+                "dueDate": "Tue Feb 28, 2023",
+                "category": "Default"
+            }
+        }
+    ];
     let _id = 0;
 
     const _updateCategory = function (oldCat, newCat) {
-        _toDo.map(function () {
-            this.updateCategory(oldCat, newCat);
+        _toDo.map(e => {
+            e.task.updateCategory(oldCat, newCat);
         });
     };
 
-    const addToDo = function (title, description, dueDate, category, subtasks) {
+    const addToDo = function (title, description, dueDate, category) {
         _toDo.push({
             id: _id++,
-            task: new ToDoListItem(
-                title,
-                description,
-                dueDate,
-                category,
-                subtasks
-            ),
+            task: new ToDoListItem(title, description, dueDate, category),
         });
     };
 
@@ -62,7 +79,7 @@ const toDoList = (function () {
     };
 
     const addCategory = function (name) {
-        if (name === _DEFAULT) {
+        if (name === default_cat) {
             console.log(`${name} is a default category.`);
             return;
         } else if (_categories.includes(name)) {
@@ -73,7 +90,7 @@ const toDoList = (function () {
     };
 
     const removeCategory = function (name) {
-        if (name === _DEFAULT) {
+        if (name === default_cat) {
             console.log('Cannot remove the default category');
             return;
         } else if (!_categories.includes(name)) {
@@ -81,15 +98,19 @@ const toDoList = (function () {
             return;
         }
         _categories.splice(_categories.indexOf(name), 1);
-        _updateCategory(name, _DEFAULT);
+        _updateCategory(name, default_cat);
     };
 
     const getToDos = function () {
         return _toDo;
     };
 
+    const getCatToDos = function (catName) {
+        return _toDo.filter((todo) => todo.task.category === catName);
+    };
+
     const getCategories = function () {
-        return [[_DEFAULT] + [..._categories]];
+        return [default_cat, ..._categories];
     };
 
     return {
@@ -98,7 +119,9 @@ const toDoList = (function () {
         addCategory,
         removeCategory,
         getToDos,
+        getCatToDos,
         getCategories,
+        default_cat,
     };
 })();
 
